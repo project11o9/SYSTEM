@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Educational trading dashboard UI demo project for learning web development. Not a real trading platform.">
+<title>Dashboard Demo</title>
+<link rel="stylesheet" href="css/auth.css">
+
+<style>
+:root{
+    --primary:#16a34a;
+    --primary-dark:#0f7a36;
+    --bg-light:#f4f6f5;
+    --text-main:#1f2937;
+    --text-muted:#6b7280;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+/* Prevent body scroll to keep it "App-like" */
+html,body{
+    height:100%;
+    overflow:hidden;
+    background:#e5e7eb;
+    display:flex;
+    justify-content:center;
+}
+
+.container{
+    width:100%;
+    max-width:400px;
+    height:100%;
+    background:var(--bg-light);
+    display:flex;
+    flex-direction:column;
+    /* This distributes space evenly if content is short */
+    justify-content: space-between;
+     
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 20px;
+    background:#fff;
+}
+.logo{color:var(--primary);font-size:20px;font-weight:700;}
+.icons span{font-size:18px;margin-left:10px;}
+
+/* CONTENT WRAPPER - This grows to fill space */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; /* Distributes sections evenly */
+    padding-bottom: 10px;
+}
+
+.hero{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    padding:30px;
+    margin:0 10px;
+    border-radius:18px;
+}
+.hero h2{font-size:18px;margin-bottom:5px;}
+.hero p{font-size:12px;opacity:.9;}
+
+/* SLIDERS */
+.slider, .short-slider {
+    padding:20px;
+    margin: 5px 10px;
+    overflow: hidden;
+}
+
+.slider {
+    background:#fff;
+    border-radius:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+
+.slide-track, .short-track{
+    display:flex;
+    width:max-content;
+    animation:scroll 18s linear infinite;
+}
+
+.stock{
+    min-width:120px;
+    padding:15px;
+    border-right:1px solid #eee;
+}
+.stock h4{font-size:13px;}
+.price{font-weight:600;color:var(--primary);}
+.change{font-size:11px;color:green;}
+
+/* MANAGE STOCK */
+.section-title{font-size:14px;font-weight:600;padding:5px 15px;}
+
+.promo-card{
+    background:#fff;
+    margin:0 10px;
+    border-radius:15px;
+    padding:30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.promo-left ul{list-style:none;font-size:12px;color:var(--text-muted);}
+.promo-left li::before{content:"✔ ";color:var(--primary);}
+
+.btn{
+    background:var(--primary);
+    color:white;
+    padding:10px 10px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+
+}
+
+.short-card{
+    background:#fff;
+    border-radius:15px;
+    padding:20px;
+    margin-right: 10px;
+    min-width:160px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+.short-card h4{font-size:13px;}
+.short-card p{font-size:11px;color:var(--text-muted);}
+.short-price{font-weight:600;color:var(--primary);margin-top:5px;}
+
+@keyframes scroll{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+}
+
+/* FOOTER - Fixed to bottom naturally */
+.bottom-nav{
+    height:70px;
+    background:#fff;
+    display:flex;
+    border-top:1px solid #eee;
+    padding-bottom: env(safe-area-inset-bottom); /* For iPhone notches */
+}
+
+.nav-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:var(--text-muted);
+    font-size:11px;
+    cursor:pointer;
+
+}
+#profileBtn{
+    cursor: pointer;
+}    
+/* ===== REVIEW OVERLAY ===== */
+
+.review-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    backdrop-filter:blur(6px);
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    transform:translateY(100%);
+    transition:.45s ease;
+    z-index:100;
+}
+
+.review-overlay.active{
+    transform:translateY(0);
+}
+
+/* PREMIUM CARD */
+.review-box{
+    background:linear-gradient(180deg,#ffffff,#f8fafc);
+    width:100%;
+    max-width:400px;
+    border-radius:28px 28px 0 0;
+    padding:24px 20px 28px;
+    box-shadow:0 -10px 40px rgba(0,0,0,0.2);
+    text-align:center;
+    animation:popUp .4s ease;
+}
+
+@keyframes popUp{
+    from{transform:translateY(40px);opacity:.6;}
+    to{transform:translateY(0);opacity:1;}
+}
+
+.review-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight:700;
+    font-size:16px;
+    margin-bottom:15px;
+}
+
+.review-header span{
+    cursor:pointer;
+    font-size:18px;
+}
+    
+
+/* STOCK LOOK */
+#stockName{
+    font-size:20px;
+    font-weight:700;
+    margin-top:10px;
+}
+
+.price{
+    font-size:15px;
+    font-weight:600;
+    margin-top:6px;
+}
+
+.price.up{color:#16a34a;}
+.price.down{color:#ef4444;}
+
+.info{
+    font-size:13px;
+    color:#6b7280;
+    margin:12px 0 18px;
+    line-height:1.4;
+}
+
+/* STARS */
+.stars{
+    font-size:34px;
+    letter-spacing:6px;
+    cursor:pointer;
+}
+
+.star{
+    color:#e5e7eb;
+    transition:.2s;
+}
+
+.star.active{
+    color:#facc15;
+    transform:scale(1.15);
+}
+
+/* SUBMIT BUTTON */
+.submit-review{
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:#16a34a;
+    color:white;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.submit-review:hover{
+    background:#0f7a36;
+}
+
+.submit-review:disabled{
+    background:#9ca3af;
+    cursor:not-allowed;
+}
+
+/* ===== CREDIT PREMIUM PANEL ===== */
+
+.credit-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+backdrop-filter:blur(8px);
+display:flex;
+justify-content:center;
+align-items:center;
+opacity:0;
+pointer-events:none;
+transition:.4s;
+z-index:200;
+}
+
+.credit-overlay.active{
+opacity:1;
+pointer-events:auto;
+}
+
+/* CARD */
+.credit-card{
+width:90%;
+max-width:360px;
+background:linear-gradient(180deg,#ffffff,#ecfdf5);
+border-radius:26px;
+padding:28px 22px;
+text-align:center;
+box-shadow:0 25px 60px rgba(0,0,0,.35);
+animation:scaleIn .35s ease;
+}
+
+@keyframes scaleIn{
+from{transform:scale(.85);opacity:.5;}
+to{transform:scale(1);opacity:1;}
+}
+
+.credit-title{
+font-weight:700;
+letter-spacing:2px;
+color:#065f46;
+margin-bottom:18px;
+}
+
+/* SHIELD */
+.shield-wrapper{
+display:flex;
+justify-content:center;
+margin:10px 0 20px;
+}
+
+.shield{
+width:150px;
+height:170px;
+background:linear-gradient(135deg,#16a34a,#0f7a36);
+clip-path:polygon(50% 0%,90% 18%,90% 60%,50% 100%,10% 60%,10% 18%);
+display:flex;
+align-items:center;
+justify-content:center;
+position:relative;
+box-shadow:0 15px 30px rgba(0,0,0,.25);
+}
+
+.shield-half{
+position:absolute;
+left:0;
+top:0;
+width:50%;
+height:100%;
+background:rgba(255,255,255,.25);
+}
+
+.score{
+font-size:38px;
+font-weight:700;
+color:#fff;
+}
+
+/* PROGRESS */
+.progress-wrap{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:10px;
+}
+
+.progress-bar{
+flex:1;
+height:8px;
+background:#d1fae5;
+border-radius:20px;
+overflow:hidden;
+}
+
+#progressFill{
+height:100%;
+width:0%;
+background:#16a34a;
+transition:1s ease;
+}
+
+/* TEXT */
+.rule-title{
+margin-top:18px;
+font-weight:600;
+color:#065f46;
+}
+
+.credit-text{
+font-size:13px;
+color:#4b5563;
+margin-top:8px;
+line-height:1.5;
+}
+
+.close-credit{
+margin-top:18px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+background:#16a34a;
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+.nav-icon{
+    width:22px;
+    height:22px;
+    margin-left:12px;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.nav-icon:active{
+    transform:scale(.9);
+}    
+
+/* MESSAGE */
+.message{
+    margin-top:12px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.nav-item span{font-size:20px;}
+.nav-item.active{color:var(--primary);font-weight:600;}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header class="header">    
+        <div class="logo">Fedility</div>
+        <div class="icons">
+    <img src="images/credit.png" class="nav-icon" id="creditBtn">        
+    <img src="images/spin.png" class="nav-icon" id="spinWheel">
+    <img src="images/wallet.png" class="nav-icon" id="walletBtn">              
+    <span>🔔</span>
+    <span id="profileBtn">👤</span>
+
+</div>
+
+    </header>
+
+    <div class="main-content">
+        <section class="hero">
+            <h2>Fedility</h2>
+            <p>Smart Secure and trusted by millions</p>
+        </section>
+
+        <div class="slider">
+            <div class="slide-track">
+                <div class="stock"><h4>Apple</h4><div class="price">$192.33</div><div class="change">+1.2%</div></div>
+                <div class="stock"><h4>Tesla</h4><div class="price">$244.90</div><div class="change">+2.8%</div></div>
+                <div class="stock"><h4>Amazon</h4><div class="price">$178.20</div><div class="change">+0.9%</div></div>
+                <div class="stock"><h4>Nvidia</h4><div class="price">$721.40</div><div class="change">+3.1%</div></div>
+                <div class="stock"><h4>Apple</h4><div class="price">$192.33</div><div class="change">+1.2%</div></div>
+                <div class="stock"><h4>Tesla</h4><div class="price">$244.90</div><div class="change">+2.8%</div></div>
+            </div>
+        </div>
+        <div>
+            <div class="promo-card">
+                <div class="promo-left">
+                    <ul>
+                        <li>Building trust with people</li>
+                        <li>Our customer is first priority</li>
+                        <li>24/7 customer support assist</li>
+                    </ul>
+                </div>
+                <div class="promo-right">
+                    <button class="btn">Explore</button>
+            </div>
+        </div>
+
+        <div class="short-slider">
+            <div class="short-track">
+                <div class="short-card"><h4>Reliance</h4><p>Energy Leader</p><div class="short-price">₹2,845 ▲1.1%</div></div>
+                <div class="short-card"><h4>HDFC Bank</h4><p>Quarterly Growth</p><div class="short-price">₹1,620 ▲0.8%</div></div>
+                <div class="short-card"><h4>Infosys</h4><p>IT Rising</p><div class="short-price">₹1,510 ▲2.3%</div></div>
+                <div class="short-card"><h4>Reliance</h4><p>Energy Leader</p><div class="short-price">₹2,845 ▲1.1%</div></div>
+                <div class="short-card"><h4>HDFC Bank</h4><p>Quarterly Growth</p><div class="short-price">₹1,620 ▲0.8%</div></div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+
+    <a href="#" class="nav-item active">
+        <span>🏠</span>
+        Homepage
+    </a>
+
+    <a href="#" class="nav-item">
+        <span>📈</span>
+        Market
+    </a>
+
+    <a href="review.html" class="nav-item" id="reviewBtn">
+        <span>⭐</span>
+        Reviews
+    </a>
+
+</nav>
+</a>
+
+</div>
+
+<!-- ===== PREMIUM CREDIT SCORE PANEL ===== -->
+<div id="creditPanel" class="credit-overlay">
+
+  <div class="credit-card">
+
+      <div class="credit-title">WITHDRAWAL SCORE</div>
+
+      <!-- SHIELD -->
+      <div class="shield-wrapper">
+
+          <div class="shield">
+              <div class="shield-half"></div>
+              <div class="score" id="scoreNumber">100</div>
+          </div>
+
+      </div>
+
+      <!-- PROGRESS BAR -->
+      <div class="progress-wrap">
+          <span>0</span>
+          <div class="progress-bar">
+              <div id="progressFill"></div>
+          </div>
+          <span>100</span>
+      </div>
+
+      <div class="rule-title">Withdrawal point rule</div>
+
+      <p class="credit-text">
+          Regular activity improves your Withdrawal level.
+          Verified accounts and successful withdrawals
+          increase trust score and unlock faster payouts.
+          Contact support if you face any issues.
+      </p>
+
+      <button class="close-credit" id="closeCredit">Close</button>
+
+  </div>
+</div>
+
+<!-- ================= REVIEW OVERLAY ================= -->
+<div id="reviewOverlay" class="review-overlay">
+
+    <div class="review-box">
+
+        <div class="review-header">
+            ⭐ Review Stocks
+            <span id="closeReview">✕</span>
+        </div>
+
+        <h3 id="stockName"></h3>
+        <div id="stockPrice" class="price"></div>
+        <p id="stockInfo" class="info"></p>
+
+        <div id="stars" class="stars"></div>
+
+<button id="submitReview" class="submit-review" disabled>
+Submit Review
+</button>
+
+<div id="msg" class="message"></div>
+
+
+    </div>
+</div>
+
+<script>
+
+/* ===============================
+   CREDIT SCORE SYSTEM (Fidelity)
+================================ */
+
+/* CREDIT BUTTON FROM HTML IMAGE */
+const creditIcon = document.getElementById("creditBtn");
+
+
+/* ---------- CREATE CREDIT PANEL ---------- */
+const creditPanel = document.createElement("div");
+creditPanel.id = "creditPanel";
+
+creditPanel.innerHTML = `
+<div class="credit-overlay">
+
+  <div class="credit-card">
+
+      <div class="credit-title">Withdrawal SCORE</div>
+
+      <div class="credit-shield">
+          <div id="creditScore">0</div>
+      </div>
+
+      <div class="credit-bar">
+          <div class="credit-progress"></div>
+      </div>
+
+      <p class="credit-info">
+      Your account maintains an excellent Withdrawal status.
+      High Withdrawal scores increase withdrawal priority,
+      reward eligibility, and platform trust level.
+      </p>
+
+      <button id="closeCredit">Close</button>
+
+  </div>
+
+</div>
+`;
+
+document.body.appendChild(creditPanel);
+
+
+/* ---------- ADD STYLES DYNAMICALLY ---------- */
+const style = document.createElement("style");
+style.innerHTML = `
+.credit-overlay{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.55);
+ backdrop-filter:blur(6px);
+ display:flex;
+ justify-content:center;
+ align-items:flex-end;
+ transform:translateY(100%);
+ transition:.4s ease;
+ z-index:999;
+}
+
+.credit-overlay.active{
+ transform:translateY(0);
+}
+
+.credit-card{
+ width:100%;
+ max-width:400px;
+ background:linear-gradient(180deg,#ffffff,#ecfdf5);
+ border-radius:28px 28px 0 0;
+ padding:25px 20px 30px;
+ text-align:center;
+ box-shadow:0 -10px 40px rgba(0,0,0,.25);
+ animation:creditPop .4s ease;
+}
+
+@keyframes creditPop{
+ from{transform:translateY(40px);opacity:.6;}
+ to{transform:translateY(0);opacity:1;}
+}
+
+.credit-title{
+ font-size:18px;
+ font-weight:700;
+ color:#065f46;
+ margin-bottom:15px;
+}
+
+.credit-shield{
+ width:150px;
+ height:150px;
+ margin:auto;
+ border-radius:50%;
+ background:conic-gradient(#16a34a 0%, #16a34a 100%);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ color:#fff;
+ font-size:42px;
+ font-weight:700;
+ box-shadow:0 10px 30px rgba(22,163,74,.4);
+}
+
+.credit-bar{
+ height:6px;
+ background:#d1fae5;
+ border-radius:10px;
+ margin:20px 0;
+ overflow:hidden;
+}
+
+.credit-progress{
+ height:100%;
+ width:100%;
+ background:#16a34a;
+}
+
+.credit-info{
+ font-size:13px;
+ color:#374151;
+ line-height:1.5;
+ margin-bottom:20px;
+}
+
+#closeCredit{
+ padding:12px;
+ width:100%;
+ border:none;
+ border-radius:12px;
+ background:#111827;
+ color:#fff;
+ font-weight:600;
+ cursor:pointer;
+}
+`;
+document.head.appendChild(style);
+
+
+/* ---------- SCORE LOGIC ---------- */
+
+function generateScore(){
+    return 100; // always premium
+}
+
+const overlay = document.querySelector(".credit-overlay");
+const scoreEl = document.getElementById("creditScore");
+
+
+/* OPEN PANEL */
+creditIcon.addEventListener("click", () => {
+
+    overlay.classList.add("active");
+
+    // reset
+    scoreEl.innerText = "0";
+
+    let current = 0;
+    const finalScore = generateScore();
+
+    const counter = setInterval(()=>{
+
+        current++;
+        scoreEl.innerText = current;
+
+        if(current >= finalScore){
+            clearInterval(counter);
+        }
+
+    },15);
+
+});
+
+
+/* CLOSE BUTTON */
+document.getElementById("closeCredit").onclick = () => {
+    overlay.classList.remove("active");
+};
+
+
+/* CLOSE WHEN CLICK OUTSIDE */
+overlay.addEventListener("click",(e)=>{
+    if(e.target === overlay){
+        overlay.classList.remove("active");
+    }
+});
+
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const profileBtn = document.getElementById("profileBtn");
+
+    if (profileBtn) {
+        profileBtn.addEventListener("click", () => {
+            console.log("Profile clicked");
+            window.location.href = "profile.html";
+        });
+    }
+
+});
+</script>
+
+<!-- ⭐ IMPORTANT -->
+<script src="js/auth.js"></script>
+
+</body>
+</html>

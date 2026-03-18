@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fidelity | Wallet</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Poppins,sans-serif;
+    background:#f4f6f5;
+    display:flex;
+    justify-content:center;
+}
+
+.container{
+    width:100%;
+    max-width:400px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+/* HEADER */
+.header{padding:18px;text-align:center;}
+.logo{color:#16a34a;font-size:22px;font-weight:800;}
+
+/* BALANCE */
+.balance-card{
+    background:linear-gradient(135deg,#16a34a,#0f7a36);
+    margin:20px;
+    border-radius:20px;
+    padding:25px;
+    color:#fff;
+}
+
+.balance{font-size:32px;font-weight:800;margin-top:10px}
+
+/* BUTTONS */
+.actions{display:flex;gap:10px;margin:0 20px;}
+.action-btn{
+    flex:1;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    font-weight:700;
+    cursor:pointer;
+}
+.deposit{background:#16a34a;color:#fff}
+.withdraw{background:#ef4444;color:#fff}
+
+/* CARD */
+.card{
+    background:#fff;
+    margin:20px;
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.input{
+    width:100%;
+    padding:8px;
+    margin:10px 0;
+    border-radius:10px;
+    border:1px solid #e5e7eb;
+}
+/* =========================
+   BOTTOM NAVIGATION
+========================= */
+
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:400px;
+    height:65px;
+    background:#fff;
+    border-top:1px solid #e5e7eb;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    box-shadow:0 -4px 12px rgba(0,0,0,.05);
+}
+
+.nav-btn{
+    text-decoration:none;
+    color:#6b7280;
+    font-size:13px;
+    font-weight:600;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.nav-btn.active{
+    color:#16a34a;
+}
+
+/* HISTORY */
+.tx{
+    display:flex;
+    justify-content:space-between;
+    margin:14px 0;
+}
+
+.credit{color:#16a34a;font-weight:700}
+.debit{color:#ef4444;font-weight:700}
+
+/* ===== EARNING GLOW ===== */
+@keyframes balanceGlow {
+  0%{box-shadow:0 0 0 rgba(34,197,94,0);transform:scale(1);}
+  40%{box-shadow:0 0 25px rgba(34,197,94,.6);transform:scale(1.03);}
+  100%{box-shadow:0 0 0 rgba(34,197,94,0);transform:scale(1);}
+}
+.balance-glow{animation:balanceGlow .9s ease;}
+</style>
+</head>
+<!-- ===== BOTTOM NAV ===== -->
+<div class="bottom-nav">
+
+<a href="dashboard.html" class="nav-btn">
+🏠
+<span>Home</span>
+</a>
+
+<a href="wallet.html" class="nav-btn active">
+💰
+<span>Wallet</span>
+</a>
+
+</div>
+
+<body>
+
+<div class="container">
+
+<header class="header">
+<div class="logo">Fidelity Wallet</div>
+</header>
+
+<div class="balance-card">
+<div>Available Balance</div>
+<div id="balance" class="balance">₹0.00</div>
+</div>
+
+<div class="actions">
+<button class="action-btn deposit" onclick="showDeposit()">Deposit</button>
+<button class="action-btn withdraw" onclick="showWithdraw()">Withdraw</button>
+</div>
+
+<div id="depositBox" class="card" style="display:none;">
+<h3>Add Funds</h3>
+<input id="depositAmount" class="input" placeholder="Enter Amount">
+<button class="action-btn deposit" onclick="depositMoney()">Confirm Deposit</button>
+</div>
+
+<div id="withdrawBox" class="card" style="display:none;">
+<h3>Withdraw Funds</h3>
+<input id="withdrawAmount" class="input" placeholder="Enter Amount">
+<button class="action-btn withdraw" onclick="withdrawMoney()">Confirm Withdraw</button>
+</div>
+
+<div class="card">
+<h3>Transaction History</h3>
+<div id="history"></div>
+</div>
+
+</div>
+
+<script>
+
+/* ===== INR FORMATTER ===== */
+function formatINR(amount){
+ return "₹"+Number(amount).toLocaleString("en-IN",{
+   minimumFractionDigits:2,
+   maximumFractionDigits:2
+ });
+}
+
+/* WALLET STATE */
+let balance=parseFloat(localStorage.getItem("wallet"))||0;
+let transactions=JSON.parse(localStorage.getItem("transactions"))||[];
+
+const balanceEl=document.getElementById("balance");
+const historyEl=document.getElementById("history");
+
+let lastBalance=balance;
+let animatedBalance=balance;
+
+updateBalance();
+renderHistory();
+
+/* ===== SMOOTH BALANCE ANIMATION ===== */
+function animateBalance(target){
+
+ const start=animatedBalance;
+ const duration=900;
+ const startTime=performance.now();
+
+ function frame(now){
+   const progress=Math.min((now-startTime)/duration,1);
+   const eased=1-Math.pow(1-progress,3);
+
+   animatedBalance=start+(target-start)*eased;
+   balanceEl.innerText=formatINR(animatedBalance);
+
+   if(progress<1){
+     requestAnimationFrame(frame);
+   }else{
+     animatedBalance=target;
+   }
+ }
+ requestAnimationFrame(frame);
+}
+
+/* BALANCE UPDATE + GLOW */
+function updateBalance(){
+
+ const newBalance=parseFloat(localStorage.getItem("wallet"))||0;
+
+ animateBalance(newBalance);
+
+ if(newBalance>lastBalance){
+   const card=document.querySelector(".balance-card");
+   card.classList.remove("balance-glow");
+   void card.offsetWidth;
+   card.classList.add("balance-glow");
+ }
+
+ lastBalance=newBalance;
+ balance=newBalance;
+}
+
+/* TOGGLE */
+function showDeposit(){
+ depositBox.style.display="block";
+ withdrawBox.style.display="none";
+}
+function showWithdraw(){
+ withdrawBox.style.display="block";
+ depositBox.style.display="none";
+}
+
+/* SAVE TRANSACTION */
+function saveTransaction(type,amount,status){
+
+ transactions=JSON.parse(localStorage.getItem("transactions"))||[];
+
+ transactions.unshift({
+   type,
+   amount:Number(amount),
+   status,
+   date:new Date().toLocaleString()
+ });
+
+ localStorage.setItem("transactions",JSON.stringify(transactions));
+ renderHistory();
+}
+
+/* HISTORY UI */
+function renderHistory(){
+
+ transactions=JSON.parse(localStorage.getItem("transactions"))||[];
+ historyEl.innerHTML="";
+
+ if(!transactions.length){
+  historyEl.innerHTML="<p>No transactions yet</p>";
+  return;
+ }
+
+ transactions.forEach(tx=>{
+
+  let statusColor="#16a34a";
+  if(tx.status==="Pending") statusColor="#f59e0b";
+  if(tx.status==="Rejected") statusColor="#ef4444";
+
+  const div=document.createElement("div");
+  div.className="tx";
+
+  div.innerHTML=`
+   <div>
+     <div>${tx.type}</div>
+     <small>${tx.date}</small><br>
+     <small style="color:${statusColor};font-weight:700">${tx.status}</small>
+   </div>
+
+   <div class="${
+     tx.type==="Deposit" ||
+     tx.type==="Commission" ||
+     tx.type==="Spin Reward"
+      ?"credit":"debit"
+   }">
+     ${tx.type==="Withdraw"?"-":"+"}${formatINR(tx.amount)}
+   </div>
+  `;
+  historyEl.appendChild(div);
+ });
+
+ updateBalance();
+}
+
+/* DEPOSIT */
+function depositMoney(){
+ const amt=parseFloat(depositAmount.value);
+ if(!amt||amt<=0) return alert("Enter valid amount");
+ saveTransaction("Deposit",amt,"Pending");
+ depositAmount.value="";
+}
+
+/* WITHDRAW */
+function withdrawMoney(){
+ const amt=parseFloat(withdrawAmount.value);
+ if(!amt||amt<=0) return alert("Enter valid amount");
+ if(amt>balance) return alert("Insufficient Balance");
+ saveTransaction("Withdraw",amt,"Pending");
+ withdrawAmount.value="";
+}
+
+/* AUTO SYNC */
+window.addEventListener("storage",()=>{
+ renderHistory();
+ updateBalance();
+});
+</script>
+
+</body>
+</html>

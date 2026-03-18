@@ -1,0 +1,43 @@
+{
+  "info": {
+    "name": "Fidelity API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "http://localhost:5000/api/auth/register", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "register"] },
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"john\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"9999999999\",\n  \"password\": \"User@123\"\n}" }
+      }
+    },
+    {
+      "name": "User Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "http://localhost:5000/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "login"] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"User@123\"\n}" }
+      }
+    },
+    {
+      "name": "Admin Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "http://localhost:5000/api/admin/login", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "admin", "login"] },
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin@123\"\n}" }
+      }
+    },
+    {
+      "name": "Admin Users",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "http://localhost:5000/api/admin/users", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "admin", "users"] }
+      }
+    }
+  ]
+}

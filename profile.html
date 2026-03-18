@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fidelity | Profile</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Poppins,sans-serif;
+background:#f4f6f5;
+display:flex;
+justify-content:center;
+}
+
+.container{
+width:100%;
+max-width:400px;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* HEADER */ .header{ background:linear-gradient(135deg,#16a34a,#065f46); color:#fff; padding:30px 20px; border-bottom-left-radius:28px; border-bottom-right-radius:28px; text-align:center; } .avatar{ width:82px;height:82px;border-radius:50%; background:#fff;color:#16a34a; display:flex;align-items:center;justify-content:center; font-size:34px;font-weight:800;margin:auto; } .name{margin-top:12px;font-size:20px;font-weight:700;} .email{font-size:13px;opacity:.9;} .verified{ margin-top:8px; font-size:12px; background:rgba(255,255,255,.2); padding:6px 14px; border-radius:20px; display:inline-block; } /* WALLET */ .wallet-card{ background:#fff; margin:-35px 20px 20px; border-radius:22px; padding:22px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,.12); } .wallet-balance{ font-size:30px; font-weight:800; margin-top:6px; color:#16a34a; }
+
+/* WALLET */
+.wallet-card{
+background:#fff;
+margin:-35px 20px 20px;
+border-radius:22px;
+padding:22px;
+text-align:center;
+box-shadow:0 20px 40px rgba(0,0,0,.12);
+}
+
+.wallet-balance{
+font-size:30px;
+font-weight:800;
+color:#16a34a;
+}
+
+/* CARD */
+.card{
+background:#fff;
+margin:15px 20px;
+border-radius:18px;
+padding:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+margin:10px 0;
+font-size:14px;
+}
+
+/* ===== ICON SLIDER ===== */
+.app-info-wrapper{
+margin:10px 0 20px;
+padding-left:20px;
+overflow:hidden;
+}
+
+.app-info-track{
+display:flex;
+gap:14px;
+overflow-x:auto;
+scroll-snap-type:x mandatory;
+}
+.app-info-track::-webkit-scrollbar{display:none;}
+
+.app-info-card{
+flex:0 0 calc((100% - 56px)/3);
+background:#fff;
+border-radius:18px;
+padding:18px 10px;
+text-align:center;
+cursor:pointer;
+box-shadow:0 8px 20px rgba(0,0,0,.08);
+transition:.25s;
+}
+
+.app-info-card:active{
+transform:scale(.92);
+}
+
+/* ✅ ICON SIZE FIX */
+.app-info-icon{
+width:32px;
+height:32px;
+font-size:28px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.app-info-icon img{
+width:100px;
+height:50px;
+object-fit:contain;
+}
+
+.app-info-card span{
+display:block;
+font-size:12px;
+margin-top:8px;
+font-weight:600;
+}
+
+/* ===== SMART TIP ===== */
+.smart-tip-card{
+margin:0 20px 20px;
+padding:18px;
+border-radius:18px;
+display:flex;
+gap:14px;
+align-items:center;
+background:linear-gradient(135deg,#ecfdf5,#ffffff);
+border:1px solid rgba(22,163,74,.15);
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.tip-icon{
+font-size:24px;
+background:#16a34a;
+color:#fff;
+width:44px;height:44px;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.tip-text{
+font-size:13px;
+color:#374151;
+opacity:0;
+transition:.4s;
+}
+.tip-text.show{opacity:1}
+
+/* SHEET */
+.app-sheet{
+position:fixed;
+left:0;right:0;bottom:-100%;
+background:#fff;
+border-radius:24px 24px 0 0;
+padding:22px;
+transition:.35s;
+z-index:9999;
+max-width:400px;margin:auto;
+box-shadow:0 -15px 40px rgba(0,0,0,.25);
+}
+.app-sheet.show{bottom:0;}
+
+.input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:10px;
+border:1px solid #e5e7eb;
+}
+
+.save-btn{
+margin-top:12px;
+width:100%;
+padding:12px;
+border:none;
+background:#16a34a;
+color:#fff;
+border-radius:12px;
+font-weight:700;
+}
+
+.sheet-close{
+margin-top:12px;
+width:100%;
+padding:12px;
+border:none;
+background:#111827;
+color:#fff;
+border-radius:12px;
+}
+
+/* NAV */
+.bottom-nav{
+margin-top:auto;
+height:70px;
+background:#fff;
+border-top:1px solid #eee;
+display:flex;
+}
+.nav-item{
+flex:1;text-align:center;padding-top:10px;
+text-decoration:none;color:#6b7280;
+}
+.nav-item.active{color:#16a34a;font-weight:700;}
+
+</style>
+</head>
+
+<body>
+
+<div class="container"> <div class="header"> <div id="avatar" class="avatar">U</div> <div id="username" class="name"></div> <div id="useremail" class="email"></div> <div class="verified">✔ KYC Verified</div> </div> <div class="wallet-card"> <div>Available Balance</div> <div id="wallet" class="wallet-balance">₹0.00</div> </div> <div class="card"> <div class="section-title">Account Information</div> <div class="row"><span>Full Name</span><span id="fullName"></span></div> <div class="row"><span>Phone</span><span id="phone"></span></div> <div class="row"><span>Email</span><span id="gmail"></span></div> </div>
+
+<!-- ICONS -->
+<div class="app-info-wrapper">
+<div class="app-info-track">
+
+<div class="app-info-card" data-type="bank">
+<div class="app-info-icon"><img src="images/bank.png">
+</div><span>Bank</span>
+</div>
+
+<div class="app-info-card" data-type="upi">
+<div class="app-info-icon"><img src="images/upi.png"></div>
+<span>UPI</span>
+</div>
+
+<div class="app-info-card" data-type="help"><div class="app-info-icon"><img src="images/help.png"></div><span>Help</span></div>
+<div class="app-info-card" data-type="about"><div class="app-info-icon"><img src="images/about.png"></div><span>About</span></div>
+<div class="app-info-card" data-type="rules"><div class="app-info-icon"><img src="images/rules.png"></div><span>Rules</span></div>
+<div class="app-info-card" data-type="terms"><div class="app-info-icon"><img src="images/terms.png"></div><span>Terms</span></div>
+
+</div>
+</div>
+
+<!-- SMART TIP -->
+<div class="smart-tip-card">
+<div class="tip-icon">💡</div>
+<div id="smartTipText" class="tip-text"></div>
+</div>
+
+<nav class="bottom-nav">
+<a href="dashboard.html" class="nav-item">🏠 Home</a>
+<a  href="wallet.html" class="nav-item">💰 Wallet</a>
+<a href="profile.html" class="nav-item active">👤 Profile</a>
+</nav>
+
+</div>
+
+<div id="sheet" class="app-sheet">
+<h3 id="sheetTitle"></h3>
+<div id="sheetContent"></div>
+<button class="sheet-close" onclick="sheet.classList.remove('show')">Close</button>
+</div>
+
+<!-- ONLY SCRIPT PART FIXED — REST SAME -->
+
+<script>
+
+/* ===== SAFE ELEMENT REFERENCES ===== */
+const sheet = document.getElementById("sheet");
+const sheetTitle = document.getElementById("sheetTitle");
+const sheetContent = document.getElementById("sheetContent");
+
+/* USER LOAD */
+function formatINR(v){
+return "₹"+Number(v).toLocaleString("en-IN",{minimumFractionDigits:2});
+}
+
+const username = document.getElementById("username");
+const useremail = document.getElementById("useremail");
+const avatar = document.getElementById("avatar");
+const wallet = document.getElementById("wallet");
+const fullName = document.getElementById("fullName");
+const gmail = document.getElementById("gmail");
+const phone = document.getElementById("phone");
+
+const name = localStorage.userName || "User";
+const email = localStorage.userEmail || "Not Provided";
+const walletAmt = localStorage.wallet || 0;
+
+username.textContent = name;
+useremail.textContent = email;
+avatar.textContent = name.charAt(0);
+wallet.textContent = formatINR(walletAmt);
+fullName.textContent = name;
+gmail.textContent = email;
+phone.textContent = localStorage.userPhone || "Not Added";
+
+
+/* ===== ICON ACTIONS (FIXED) ===== */
+document.querySelectorAll(".app-info-card").forEach(card=>{
+card.addEventListener("click",()=>{
+
+const type = card.dataset.type;
+
+/* BANK */
+if(type==="bank"){
+openSheet("Bank Details",`
+<input class="input" id="bankName" placeholder="Bank Name">
+<input class="input" id="acc" placeholder="Account Number">
+<input class="input" id="ifsc" placeholder="IFSC Code">
+<button class="save-btn" onclick="saveBank()">Save Bank</button>
+`);
+}
+
+/* UPI */
+else if(type==="upi"){
+openSheet("UPI Details",`
+<input class="input" id="upi" placeholder="example@upi">
+<button class="save-btn" onclick="saveUPI()">Save UPI</button>
+`);
+}
+
+/* HELP */
+else if(type==="help"){
+openSheet("Help & Support",`
+<p>Our support team helps with wallet issues, payouts and login problems.</p>
+<p>Email: <b>support@fidelityapp.in</b></p>
+<p>Support Hours: 10 AM – 7 PM (Mon–Sat)</p>
+`);
+}
+
+/* ABOUT */
+else if(type==="about"){
+openSheet("About Fidelity",`
+<p>Fidelity is a premium fintech reward dashboard designed for secure
+wallet management and smooth payout experience.</p>
+<p>We focus on transparency, fast withdrawals and mobile-first design.</p>
+`);
+}
+
+/* RULES */
+else if(type==="rules"){
+openSheet("Platform Rules",`
+<p>Fake activity or reward manipulation may lead to suspension.</p>
+<p>Only genuine usage qualifies for withdrawals.</p>
+<p>Keep your credentials private for security.</p>
+`);
+}
+
+/* TERMS */
+else if(type==="terms"){
+openSheet("Terms & Conditions",`
+<p>Wallet balances are platform reward credits.</p>
+<p>Withdrawals require verification and may take processing time.</p>
+<p>Using Fidelity means accepting platform policies.</p>
+`);
+}
+
+});
+});
+
+
+/* ===== SHEET FUNCTIONS ===== */
+function openSheet(title,html){
+sheetTitle.innerText = title;
+sheetContent.innerHTML = html;
+sheet.classList.add("show");
+}
+
+function closeSheet(){
+sheet.classList.remove("show");
+}
+
+
+/* ===== SAVE FUNCTIONS ===== */
+function saveBank(){
+localStorage.bankName =
+document.getElementById("bankName").value;
+alert("✅ Bank Saved");
+closeSheet();
+}
+
+function saveUPI(){
+localStorage.upiId =
+document.getElementById("upi").value;
+alert("✅ UPI Saved");
+closeSheet();
+}
+
+
+/* ===== SMART TIP ENGINE ===== */
+const tipText=document.getElementById("smartTipText");
+
+function generateTips(){
+let tips=[];
+if(!localStorage.bankName) tips.push("🏦 Add bank details to enable withdrawals.");
+if(!localStorage.upiId) tips.push("📱 Link UPI for faster payouts.");
+if(walletAmt==0) tips.push("🚀 Start earning by completing tasks.");
+tips.push(
+"⭐ Active users receive bonus rewards.",
+"🔥 Daily activity increases earning probability.",
+"💰 Higher wallet balance unlocks faster payouts."
+);
+return tips;
+}
+
+const smartTips=generateTips();
+let i=0;
+
+function rotateTips(){
+tipText.classList.remove("show");
+setTimeout(()=>{
+tipText.innerText=smartTips[i];
+tipText.classList.add("show");
+i=(i+1)%smartTips.length;
+},300);
+}
+
+rotateTips();
+setInterval(rotateTips,5000);
+
+</script>
+</body>
+</html>
